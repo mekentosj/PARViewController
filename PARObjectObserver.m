@@ -117,36 +117,17 @@
 	[self notifyDelegateForKeyPath:key];
 }
 
-// why we need this for GC: http://stackoverflow.com/questions/13927/in-cocoa-do-i-need-to-remove-an-object-from-receiving-kvo-notifications-when-deal
-- (void)invalidate
-{
-	for (NSString *key in observedKeys)
-		[observedObject removeObserver:self forKeyPath:key];
-	self.observedKeys = nil;
-	self.delegate = nil;
-	self.observedObject = nil;
-	callbackSelector = NULL;
-}
-
-// compiling with ARC
-#if __has_feature(objc_arc)
 - (void)dealloc
 {
-	[self invalidate];
+    for (NSString *key in observedKeys)
+    {
+        [observedObject removeObserver:self forKeyPath:key];
+    }
+
+    observedKeys = nil;
     observedObject = nil;
     delegate = nil;
+    callbackSelector = NULL;
 }
-
-// compiling without ARC
-#else
-- (void)dealloc
-{
-	[self invalidate];
-    observedObject = nil;
-    delegate = nil;
-    [super dealloc];
-}
-#endif
-
 
 @end

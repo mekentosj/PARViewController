@@ -16,10 +16,6 @@
 
 + (PARObjectObserver *)observerWithDelegate:(id)delegate selector:(SEL)callbackSelector observedKeys:(NSArray *)observedKeys observedObject:(id)observedObject;
 
-// in GC environments, call this method when the observer is no longer needed (but not in the `finalize` method)
-// in non-GC, you can still call it, but it's also automatically done in dealloc
-- (void)invalidate;
-
 // forces callback on main thread -- default = YES
 @property BOOL callbackMainThreadOnly;
 

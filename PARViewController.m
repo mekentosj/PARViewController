@@ -14,8 +14,6 @@
 
 @implementation PARViewController
 
-@synthesize nextResponderObserver;
-
 - (void)dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];

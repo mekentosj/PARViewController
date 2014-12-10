@@ -32,9 +32,7 @@
 
 @class PARObjectObserver;
 
-@interface PARViewController : NSViewController {
-	PARObjectObserver *nextResponderObserver;
-}
+@interface PARViewController : NSViewController
 
 // default implementation commits editing of current field editor if the window is key and if a field editor is up
 // subclasses can override this method to perform other actions

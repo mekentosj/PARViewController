@@ -39,7 +39,6 @@
 {
 	[super setView:newView];
 	[self patchResponderChain];
-	[self.nextResponderObserver invalidate];
 	if (newView != nil)
 		self.nextResponderObserver = [PARObjectObserver observerWithDelegate:self selector:@selector(nextResponderDidChange) observedKeys:@[@"nextResponder"] observedObject:[self view]];
 

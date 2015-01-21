@@ -10,12 +10,15 @@
 
 @interface PARViewController()
 @property (readwrite, retain) PARObjectObserver *nextResponderObserver;
-@property (assign, nonatomic) BOOL viewWindowObservationRemoved;
+@property (assign, nonatomic) BOOL viewWindowObservationEnabled;
+@property (assign, nonatomic) BOOL par_isViewLoaded;
 @end
 
 @implementation PARViewController
 
 @synthesize nextResponderObserver;
+
+static void * PARViewControllerContext = &PARViewControllerContext;
 
 - (void)dealloc
 {
@@ -41,26 +44,47 @@
 	}
 }
 
+#pragma mark - KVO
+
 - (void)removeViewWindowObservation
 {
-    if (!self.viewWindowObservationRemoved)
+    if (self.viewWindowObservationEnabled)
     {
         [self removeObserver:self forKeyPath:@"view.window"];
-        self.viewWindowObservationRemoved = YES;
+        self.viewWindowObservationEnabled = NO;
     }
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == PARViewControllerContext) {
+        if (object == self && [keyPath isEqual:@"view.window"]) {
+            self.nextResponderObserver = nil;
+            [self removeViewWindowObservation];
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
+- (void)loadView
+{
+    [super loadView];
+    self.par_isViewLoaded = YES;
 }
 
 - (void)setView:(NSView *)newView
 {
-    if (self.view == newView)
+    if (self.par_isViewLoaded && self.view == newView)
     {
+        [super setView:newView];
         return;
     }
     
     // Remove self.view.window KVO
     [self removeViewWindowObservation];
-    
     [super setView:newView];
+    
 	[self patchResponderChain];
 	[self.nextResponderObserver invalidate];
 	if (newView != nil)
@@ -72,7 +96,8 @@
     [self addObserver:self
            forKeyPath:@"view.window"
               options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
-              context:nil];
+              context:PARViewControllerContext];
+    self.viewWindowObservationEnabled = YES;
 
 	// optionally observe the view frame
 	if ([self respondsToSelector:@selector(viewFrameDidChange)])

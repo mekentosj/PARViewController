@@ -65,12 +65,44 @@ static void * PARViewControllerContext = &PARViewControllerContext;
     }
 }
 
++ (BOOL) accessInstanceVariablesDirectly
+{
+    // For the case of removing objects from the responder chain, we must prevent direct access to instance variables
+    return NO;
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == PARViewControllerContext) {
         if (object == self && [keyPath isEqual:@"view.window"]) {
-            self.nextResponderObserver = nil;
-            [self removeViewWindowObservation];
+            NSWindow *old = change[NSKeyValueChangeOldKey];
+            NSWindow *new = change[NSKeyValueChangeNewKey];
+            
+            if ((old == nil || [old isEqual:[NSNull null]]) && new != nil)
+            {
+                // When adding view to a window, we also need to adjust the responder chain accordingly
+                [self patchResponderChain];
+            }
+            else if (old != nil && (new == nil || [new isEqual:[NSNull null]]))
+            {
+                // When removing view from a window, we also need to adjust the responder chain accordingly
+                [self unpatchResponderChain];
+                
+                // Set the nextResponderObserver to nil & remove the KVO window observer
+                self.nextResponderObserver = nil;
+                [self removeViewWindowObservation];
+            }
+            else if (old != nil && new != nil && new != old)
+            {
+                // Changing window
+                [self unpatchResponderChain];
+                
+                // Set the nextResponderObserver to nil & remove the KVO window observer
+                self.nextResponderObserver = nil;
+                [self removeViewWindowObservation];
+                
+                [self patchResponderChain];
+            }
         }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];

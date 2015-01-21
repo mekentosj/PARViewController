@@ -127,9 +127,9 @@ static void * PARViewControllerContext = &PARViewControllerContext;
     
     // Remove self.view.window KVO
     [self removeViewWindowObservation];
+    
     [super setView:newView];
     
-	[self patchResponderChain];
 	[self.nextResponderObserver invalidate];
 	if (newView != nil)
     {

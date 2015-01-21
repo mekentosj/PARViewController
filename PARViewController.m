@@ -44,6 +44,16 @@ static void * PARViewControllerContext = &PARViewControllerContext;
 	}
 }
 
+- (void)unpatchResponderChain
+{
+    NSResponder *parentResponder = [self view];
+    
+    NSAssert(self.view.nextResponder == self, @"Our view is not actually the parent responder.");
+    
+    // Remove the current view controller from the responder chain
+    [parentResponder setNextResponder:[self nextResponder]];
+}
+
 #pragma mark - KVO
 
 - (void)removeViewWindowObservation

@@ -112,6 +112,8 @@ static void * PARViewControllerContext = &PARViewControllerContext;
 - (void)loadView
 {
     [super loadView];
+    
+    // AppKit implementation of isViewLoaded is only available in OS X 10.10 or above, so we need to set our own flag here
     self.par_isViewLoaded = YES;
 }
 

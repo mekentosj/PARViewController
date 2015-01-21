@@ -139,7 +139,7 @@ static void * PARViewControllerContext = &PARViewControllerContext;
     // Add self.view.window KVO
     [self addObserver:self
            forKeyPath:@"view.window"
-              options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
+              options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial
               context:PARViewControllerContext];
     self.viewWindowObservationEnabled = YES;
 

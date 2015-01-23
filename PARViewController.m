@@ -11,6 +11,7 @@
 @interface PARViewController()
 @property (readwrite, retain) PARObjectObserver *nextResponderObserver;
 @property (assign, nonatomic) BOOL viewWindowObservationEnabled;
+// AppKit implementation of isViewLoaded is only available in OS X 10.10 or above, so we need to set our own flag here
 @property (assign, nonatomic) BOOL par_isViewLoaded;
 @end
 
@@ -65,7 +66,7 @@ static void * PARViewControllerContext = &PARViewControllerContext;
     }
 }
 
-+ (BOOL) accessInstanceVariablesDirectly
++ (BOOL)accessInstanceVariablesDirectly
 {
     // For the case of removing objects from the responder chain, we must prevent direct access to instance variables
     return NO;
@@ -112,8 +113,6 @@ static void * PARViewControllerContext = &PARViewControllerContext;
 - (void)loadView
 {
     [super loadView];
-    
-    // AppKit implementation of isViewLoaded is only available in OS X 10.10 or above, so we need to set our own flag here
     self.par_isViewLoaded = YES;
 }
 

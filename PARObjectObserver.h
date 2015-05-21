@@ -2,6 +2,8 @@
 //  Author: Charles Parnot
 //  Licensed under the terms of the BSD License, as specified in the file 'LICENSE-BSD.txt' included with this distribution
 
+#import <Foundation/Foundation.h>
+
 @interface PARObjectObserver : NSObject
 {
 	__unsafe_unretained id observedObject;
